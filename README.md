@@ -6,6 +6,6 @@ pip install -r requirements.txt
 
 Run main.py
 
-**Next**
+**Future Work**
 
-DSC Image similarity
+Apply DSC Image similarity
