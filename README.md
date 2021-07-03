@@ -19,3 +19,5 @@ Run main.py
 **Future Work**
 
 Apply DSC Image similarity
+
+Try with different number of filters and see if really multiple filters help
