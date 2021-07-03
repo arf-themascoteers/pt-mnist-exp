@@ -2,9 +2,10 @@ from torch.utils.data import DataLoader
 import torch
 from torchvision import datasets
 from torchvision.transforms import ToTensor
+from simple_net import SimpleNet
+import torch.nn.functional as F
 
-
-def train():
+def pretrain():
     working_set = datasets.MNIST(
         root='data',
         train=True,
@@ -31,5 +32,37 @@ def train():
     filters = filters/255
     torch.save(filters,"filters.pt")
 
+
+def train():
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    NUM_EPOCHS = 3
+    BATCH_SIZE = 100
+
+    working_set = datasets.MNIST(
+        root='data',
+        train=True,
+        transform=ToTensor(),
+        download=True,
+    )
+
+    dataloader = DataLoader(working_set, batch_size=BATCH_SIZE, shuffle=True)
+    filters = torch.load("filters.pt").reshape(200,28,28).to(device)
+    model = SimpleNet(filters).to(device)
+    model.train()
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+
+    for epoch in range(0, NUM_EPOCHS):
+        for data, y_true in dataloader:
+            data = data.reshape(data.shape[0],28,28).to(device)
+            optimizer.zero_grad()
+            y_pred = model(data)
+            loss = F.nll_loss(y_pred, y_true)
+            loss.backward()
+            optimizer.step()
+            print(f'Epoch:{epoch + 1}, Loss:{loss.item():.4f}')
+    torch.save(model.state_dict(), 'models/machine.h5')
+    return model
+
 if __name__ == "__main__":
+    #pretrain()
     train()
