@@ -11,7 +11,7 @@ def plot(img):
 
 
 def diff(y, f):
-    return torch.sum(torch.abs(y-f))
+    return torch.sum(torch.abs(y-f))/5
 
 
 def similarity(y,f):
@@ -19,7 +19,9 @@ def similarity(y,f):
 
 
 def calculate_score(y, f):
-    return torch.sum(y * f)*2 - diff(y,f)
+    sim = similarity(y,f)
+    dif = diff(y,f)
+    return sim - dif
 
 
 def detect(data, filters):
@@ -27,7 +29,7 @@ def detect(data, filters):
     for i in range(filters.shape[0]):
         score[i] = calculate_score(data, filters[i])
 
-    return torch.argmax(score)
+    return torch.argmax(score), score
 
 
 def test():
@@ -44,11 +46,11 @@ def test():
     filters = torch.load("filters.pt")
     for data, y_true in dataloader:
         data = data.reshape(28, 28)
-        pred = detect(data, filters)
+        pred, score = detect(data, filters)
         if pred == y_true.item():
             correct += 1
-        # else:
-        #     print(y_true.item())
+        else:
+            y_true.item()
         total += 1
         if total%1000 == 0:
             print(f"{total} tested. {correct} correct")
