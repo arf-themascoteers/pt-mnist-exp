@@ -27,13 +27,7 @@ def detect(data, filters):
     for i in range(filters.shape[0]):
         score[i] = calculate_score(data, filters[i])
 
-    new_score = torch.zeros(filters.shape[0])
-    all_score = torch.sum(score)
-    for i in range(filters.shape[0]):
-        others_score = all_score - score
-        new_score = score - (others_score/20)
-
-    return torch.argmax(new_score)
+    return torch.argmax(score)
 
 
 def test():
@@ -56,7 +50,8 @@ def test():
         # else:
         #     print(y_true.item())
         total += 1
-
+        if total%1000 == 0:
+            print(f"{total} tested. {correct} correct")
     print(f"{correct} correct among {total}")
 
 
