@@ -31,7 +31,7 @@ def detect(data, filters):
     all_score = torch.sum(score)
     for i in range(filters.shape[0]):
         others_score = all_score - score
-        new_score = score - (others_score/10)
+        new_score = score - (others_score/20)
 
     return torch.argmax(new_score)
 
@@ -53,8 +53,8 @@ def test():
         pred = detect(data, filters)
         if pred == y_true.item():
             correct += 1
-        else:
-            print(y_true.item())
+        # else:
+        #     print(y_true.item())
         total += 1
 
     print(f"{correct} correct among {total}")
@@ -63,8 +63,10 @@ def test():
 def print_filters():
     filters = torch.load("filters.pt")
     for i in filters:
-        plt.imshow(i)
-        plt.show()
+        for j in i:
+            plt.imshow(j)
+            plt.show()
 
 if __name__ == "__main__":
+    #print_filters()
     test()
