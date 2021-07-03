@@ -11,11 +11,13 @@ class SimpleNet(nn.Module):
         self.filters.requires_grad = True
 
     def forward(self, x):
-        similarity = torch.zeros((x.shape[0],self.filters.shape[0]))
+        x = x.reshape(x.shape[0],-1)
+        filter_sum = self.filters.sum(dim=1)/self.filters.shape[1]
+        filter_sum = filter_sum.reshape(self.filters.shape[0],-1)
+        similarity = torch.mm(x,filter_sum.T)
         diff = torch.zeros_like(similarity)
-        for i in range(similarity.shape[0]):
-            for j in range(similarity.shape[1]):
-                similarity[i][j] = torch.sum(x[i] * self.filters[j])
-                diff[i][j] = torch.sum(torch.abs(x[i] - self.filters[j])) / 5
-        score = similarity - diff
+        for i in range(x.shape[0]):
+            diff[i] = torch.sum(torch.abs(x[i] - filter_sum))
+        diff = diff/self.filters.shape[1]
+        score = similarity - diff/2
         return F.log_softmax(score)

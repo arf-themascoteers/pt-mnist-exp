@@ -1,3 +1,5 @@
+import time
+
 from torch.utils.data import DataLoader
 import torch
 from torchvision import datasets
@@ -35,8 +37,8 @@ def pretrain():
 
 def train():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    NUM_EPOCHS = 3
-    BATCH_SIZE = 100
+    NUM_EPOCHS = 10
+    BATCH_SIZE = 3000
 
     working_set = datasets.MNIST(
         root='data',
@@ -46,21 +48,24 @@ def train():
     )
 
     dataloader = DataLoader(working_set, batch_size=BATCH_SIZE, shuffle=True)
-    filters = torch.load("filters.pt").reshape(200,28,28).to(device)
+    filters = torch.load("filters.pt").to(device)
     model = SimpleNet(filters).to(device)
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-
+    start = time.time()
     for epoch in range(0, NUM_EPOCHS):
         for data, y_true in dataloader:
             data = data.reshape(data.shape[0],28,28).to(device)
             optimizer.zero_grad()
             y_pred = model(data)
+            y_true = y_true.to(device)
             loss = F.nll_loss(y_pred, y_true)
             loss.backward()
             optimizer.step()
             print(f'Epoch:{epoch + 1}, Loss:{loss.item():.4f}')
-    torch.save(model.state_dict(), 'models/machine.h5')
+        torch.save(model.state_dict(), 'models/machine.h5')
+    end = time.time()
+    print(f"Training time: {round(end-start)}")
     return model
 
 if __name__ == "__main__":

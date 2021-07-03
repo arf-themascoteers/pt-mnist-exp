@@ -3,7 +3,7 @@ import torch
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
-
+from simple_net import SimpleNet
 
 def plot(img):
     plt.imshow(img)
@@ -57,6 +57,33 @@ def test():
     print(f"{correct} correct among {total}")
 
 
+def test_machine():
+    BATCH_SIZE = 100
+
+    working_set = datasets.MNIST(
+        root='data',
+        train=True,
+        transform=ToTensor(),
+        download=True,
+    )
+
+    dataloader = DataLoader(working_set, batch_size=BATCH_SIZE, shuffle=True)
+    filters = torch.load("filters.pt")
+    model = SimpleNet(filters)
+    model.load_state_dict(torch.load("models/machine.h5"))
+    model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for data, y_true in dataloader:
+            y_pred = model(data)
+            pred = torch.argmax(y_pred, dim=1, keepdim=True)
+            correct += pred.eq(y_true.data.view_as(pred)).sum()
+            total += 1
+
+    print(f"{correct} correct among {len(working_set)}")
+
+
 def print_filters():
     filters = torch.load("filters.pt")
     for i in filters:
@@ -66,4 +93,5 @@ def print_filters():
 
 if __name__ == "__main__":
     #print_filters()
-    test()
+    #test()
+    test_machine()

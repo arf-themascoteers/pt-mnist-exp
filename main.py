@@ -7,4 +7,4 @@ train.train()
 #test.print_filters()
 
 print("Testing started...")
-test.test()
+test.test_machine()
