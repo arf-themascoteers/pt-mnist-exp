@@ -87,11 +87,9 @@ def test_machine():
 def print_sample_filters():
     filters = torch.load("filters.pt")
     for i in filters:
-        for j in i:
-            plt.imshow(j)
-            plt.show()
+        plt.imshow(i[0])
+        plt.show()
+
 
 if __name__ == "__main__":
-    #print_filters()
-    #test()
     test_machine()
