@@ -15,10 +15,5 @@ class SimpleNet(nn.Module):
         filter_sum = self.filters.sum(dim=1)/self.filters.shape[1]
         filter_sum = filter_sum.reshape(self.filters.shape[0],-1)
         similarity = torch.mm(x,filter_sum.T)
-        # diff = torch.zeros_like(similarity)
-        # for i in range(x.shape[0]):
-        #     diff[i] = torch.sum(torch.abs(x[i] - filter_sum))
-        # diff = diff/self.filters.shape[1]
-        # score = similarity - diff/2
         score = similarity
         return F.log_softmax(score)
