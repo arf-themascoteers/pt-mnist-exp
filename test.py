@@ -84,7 +84,7 @@ def test_machine():
     print(f"{correct} correct among {len(working_set)}")
 
 
-def print_filters():
+def print_sample_filters():
     filters = torch.load("filters.pt")
     for i in filters:
         for j in i:
