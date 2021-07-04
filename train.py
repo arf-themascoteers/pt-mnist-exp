@@ -47,7 +47,7 @@ def train():
         download=True,
     )
 
-    dataloader = DataLoader(working_set, batch_size=BATCH_SIZE, shuffle=True)
+    dataloader = DataLoader(working_set, batch_size=BATCH_SIZE, shuffle=False)
     filters = torch.load("filters.pt").to(device)
     model = SimpleNet(filters).to(device)
     model.train()
